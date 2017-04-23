@@ -3,7 +3,7 @@ function init(){
     ce = document.getElementById('ce');
     c = ce.getContext('2d');
     px = 16;
-    loc = [0, 0];
+    loc = [40, 50];
     xoffset = 29;
     yoffset = 19;
     xlim = 60;
@@ -83,9 +83,12 @@ function terragen(a, b, c, d){
 }
 
 function v(x, y){
-    return 1/((x-20)*(x-20)+y*y) + 2/((x+10)*(x+10)+y*y) >= 1/100 ? 1 : 0;
+    return (x>=lxmin && x<lxmax && y>=lymin && y<lymax) ? terra[y][x] : 0;
 }
 
 function makegrounds(){
-    
+    lxmin = 0;
+    lxmax = (terra[0]).length;
+    lymin = 0;
+    lymax = (terra).length;
 }
