@@ -15,14 +15,15 @@ colorlist = [(255,255,255), (208,181,0), (0,153,0), (0,120,120), (0,130,130), (0
 # 2 = forest
 # 3 = mountain
 # 4 = image mountain
-# 5 = big mountain
-# 6 = volcano
+# 5 = big mountain !!
+# 6 = volcano !!
 # 7 = rock
 # 8 = grass
-# 9 = statue
+# 9 = statue !!
 # 10 = light trees
-# 11 = hidden gun in stone
-# 12 = hidden item underground
+# 11 = hidden gun in stone !!
+# 12 = hidden item underground !!
+# 13 = lava (!!)
 
 lsts = []
 for j in range(y):

@@ -3,13 +3,16 @@ function init(){
     ce = document.getElementById('ce');
     c = ce.getContext('2d');
     px = 16;
-    loc = [4, 43];
     xoffset = 29;
     yoffset = 19;
     xlim = 60;
     ylim = 40;
     loaded = 0;
     totalimg = 0;
+    lavaxmin = 43
+    lavaxmax = 74
+    lavaymin = 0
+    lavaymax = 40
     person = regimg('char');
     grass = regimg('grass');
     tree1 = regimg('tree1');
@@ -25,10 +28,17 @@ function init(){
     mountain = regimg('mountain');
     volcano = regimg('volcano');
     hugemountain = regimg('huge_mountain');
-    lxmin = -100;
-    lxmax = 100;
-    lymin = -100;
-    lymax = 100;
+    axe = regimg('axe');
+    rope = regimg('rope');
+    protectionsuit = regimg('protection_suit');
+    pickaxe = regimg('pickaxe');
+    gun = regimg('gun');
+//    spade = regimg('spade');
+    inventoryimages = ({
+        12: axe, 12.25: rope, 12.5: protectionsuit,
+        12.75: pickaxe, 11: gun, 7: rock2,
+        2: tree2 /*, 14: spade*/
+    });
     makegrounds();
     terrainnames = ['ocean','land_1','land_2','land_12',
                     'land_3','land_13','land_23','land_123',
@@ -40,6 +50,15 @@ function init(){
         terrains[i] = regimg(terrainnames[i]);
     }
     ocean = terrains[0];
+    loc = [4, 43];
+    inventory = [14];
+    focus = 0;
+    inventoryopened = true;
+    hasaxe = false;
+    hasrope = false;
+    hasprotectionsuit = false;
+    haspickaxe = false;
+    hasgun = false;
     document.addEventListener('keydown', keydownlistener);
 }
 
@@ -73,33 +92,66 @@ function redraw(){
         }
     }
     c.drawImage(person, xoffset*px, yoffset*px);
+
+    if(inventoryopened){
+        c.fillStyle = '#9c6d37';
+        c.fillRect(8, 8, 4+(4+16)*(inventory.length), 24);
+        
+    }else{
+        
+    }
 }
 
 function keydownlistener(e){
+    var newloc;
     console.log(e);
     var newloc = loc;
     switch(e.code){
     case 'ArrowUp': case 'KeyW':
+        inventoryopened = false;
         newloc=[loc[0], loc[1]-1]; break;
     case 'ArrowDown': case 'KeyS':
+        inventoryopened = false;
         newloc=[loc[0], loc[1]+1]; break;
     case 'ArrowLeft': case 'KeyA':
+        inventoryopened = false;
         newloc=[loc[0]-1, loc[1]]; break;
     case 'ArrowRight': case 'KeyD':
+        inventoryopened = false;
         newloc=[loc[0]+1, loc[1]]; break;
+    case 'KeyQ':
+        inventoryopened = true;
+        if(focus==0){
+            focus = inventory.length-1;
+        }else{
+            focus --;
+        }
+        break;
+    case 'KeyE':
+        inventoryopened = true;
+        if(focus==inventory.length-1){
+            focus = 0;
+        }else{
+            focus ++;
+        }
+        break;
     }
-    if(movable(newloc)) loc=newloc;
+    switch(Math.floor(vl(newloc))){
+    case 0: break;
+    case 2: terra[newloc[1]][newloc[0]] = 8; break;
+    default: loc = newloc;
+    }
     redraw();
 }
 
 function movable(L){
     //    return (t != 0 && t != 7 && t != 7.25 && t != 7.5 && t != 2 && t != 2.25 && t != 2.5);
-    return (v(L[0], L[1])!=0);
+    return (vl(L)!=0);
 }
 
 function imgloader(){
     loaded++;
-    if(loaded==totalimg) redraw();
+    if(loaded>=totalimg) redraw();
 }
 
 function visitor(x, y){
@@ -108,6 +160,10 @@ function visitor(x, y){
 
 function terragen(a, b, c, d){
     return a | (b<<1) | (c<<2) | (d<<3);
+}
+
+function vl(L){
+    return v(L[0],L[1]);
 }
 
 function v(x, y){
@@ -131,6 +187,12 @@ function makegrounds(){
             else if(roll<2/3){ terra[i][j] += 0.5 }
         }
     }
+    terra[58][11] = 12;
+    terra[46][41] = 12.25;
+    terra[36][65] = 12.5;
+    terra[37][112] = 12.75;
+    terra[54][96] = 11;
+    terra[42][51] = 11.5;
 }
 
 function regimg(name){
@@ -140,3 +202,4 @@ function regimg(name){
     s.src = 'img/' + name + '.png';
     return s;
 }
+
