@@ -8,42 +8,20 @@ function init(){
     yoffset = 19;
     xlim = 60;
     ylim = 40;
-/*    ocean = new Image();
-    ocean.onload = imgloader;
-    ocean.src = "ocean.png"
-    sand = new Image();
-    sand.onload = imgloader;
-    sand.src = "sand.png"
-    tree = new Image();
-    tree.onload = imgloader;
-    tree.src = "tree.png"*/
-    person = new Image();
-    person.onload = imgloader;
-    person.src = "img/char.png"
-    grass = new Image();
-    grass.onload = imgloader;
-    grass.src = "img/grass.png"
-    tree1 = new Image();
-    tree1.onload = imgloader;
-    tree1.src = "img/tree1.png"
-    tree2 = new Image();
-    tree2.onload = imgloader;
-    tree2.src = "img/tree2.png"
-    tree3 = new Image();
-    tree3.onload = imgloader;
-    tree3.src = "img/tree3.png"
-    rock1 = new Image();
-    rock1.onload = imgloader;
-    rock1.src = "img/rock1.png"
-    rock2 = new Image();
-    rock2.onload = imgloader;
-    rock2.src = "img/rock2.png"
-    rock3 = new Image();
-    rock3.onload = imgloader;
-    rock3.src = "img/rock3.png"
-/*    wolf = new Image();
-    wolf.onload = imgloader;
-    wolf.src = "wolf.png"*/
+    loaded = 0;
+    totalimg = 0;
+    person = regimg('char');
+    grass = regimg('grass');
+    tree1 = regimg('tree1');
+    tree2 = regimg('tree2');
+    tree3 = regimg('tree3');
+    ltree1 = regimg('light_tree1');
+    ltree2 = regimg('light_tree2');
+    ltree3 = regimg('light_tree3');
+    rock1 = regimg('rock1');
+    rock2 = regimg('rock2');
+    rock3 = regimg('rock3');
+    monument = regimg('monument');
     lxmin = -100;
     lxmax = 100;
     lymin = -100;
@@ -56,13 +34,9 @@ function init(){
     terrains = [];
     var i;
     for(i in terrainnames){
-        terrains[i] = new Image();
-        terrains[i].onload = imgloader;
-        terrains[i].src = 'img/'+terrainnames[i]+'.png';
+        terrains[i] = regimg(terrainnames[i]);
     }
     ocean = terrains[0];
-    loaded = 0;
-    totalimg = 8+16;
     document.addEventListener('keydown', keydownlistener);
 }
 
@@ -78,17 +52,25 @@ function redraw(){
         case 8:
             c.drawImage(grass, i*px-2, j*px-2); break;
         case 2:
-            c.drawImage(tree1, i*px-2, j*px-2); break;
+            c.drawImage(tree1, i*px, j*px); break;
         case 2.25:
-            c.drawImage(tree2, i*px-2, j*px-2); break;
+            c.drawImage(tree2, i*px, j*px); break;
         case 2.5:
-            c.drawImage(tree3, i*px-2, j*px-2); break;
+            c.drawImage(tree3, i*px-4, j*px-4); break;
         case 7:
-            c.drawImage(rock1, i*px-2, j*px-2); break;
+            c.drawImage(rock1, i*px, j*px); break;
         case 7.25:
-            c.drawImage(rock2, i*px-2, j*px-2); break;
+            c.drawImage(rock2, i*px-4, j*px-4); break;
         case 7.5:
-            c.drawImage(rock3, i*px-2, j*px-2); break;
+            c.drawImage(rock3, i*px-8, j*px-8); break;
+        case 9:
+            c.drawImage(monument, i*px, j*px); break;
+        case 10:
+            c.drawImage(ltree1, i*px, j*px); break;
+        case 10.25:
+            c.drawImage(ltree2, i*px-4, j*px-4); break;
+        case 10.5:
+            c.drawImage(ltree3, i*px-8, j*px-8); break;
         }
     }
     c.drawImage(person, xoffset*px, yoffset*px);
@@ -110,7 +92,8 @@ function keydownlistener(e){
 }
 
 function movable(t){
-    return (t != 0 && t != 7 && t != 7.25 && t != 7.5 && t != 2 && t != 2.25 && t != 2.5);
+    //    return (t != 0 && t != 7 && t != 7.25 && t != 7.5 && t != 2 && t != 2.25 && t != 2.5);
+    return (t!=0);
 }
 
 function imgloader(){
@@ -141,14 +124,18 @@ function makegrounds(){
     lymax = (terra).length;
     var i, j, roll;
     for(i=lymin; i<lymax; i++) for(j=lxmin; j<lxmax; j++){
-        if(terra[i][j] == 2){
+        if(terra[i][j] == 2 || terra[i][j] == 7 || terra[i][j] == 10){
             roll = Math.random();
-            if(roll<1/3){ terra[i][j] = 2.25 }
-            else if(roll<2/3){ terra[i][j] = 2.5 }
-        }else if(terra[i][j] == 7){
-            roll = Math.random();
-            if(roll<1/3){ terra[i][j] = 7.25 }
-            else if(roll<2/3){ terra[i][j] = 7.5 }
+            if(roll<1/3){ terra[i][j] += 0.25 }
+            else if(roll<2/3){ terra[i][j] += 0.5 }
         }
     }
+}
+
+function regimg(name){
+    var s = new Image();
+    totalimg++;
+    s.onload = imgloader;
+    s.src = 'img/' + name + '.png';
+    return s;
 }
