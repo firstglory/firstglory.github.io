@@ -2,7 +2,7 @@ from PIL import Image
 import copy
 import json
 
-img = Image.open("map2.png")
+img = Image.open("map3.png")
 data = img.getdata()
 x = data.size[0]
 y = data.size[1]
