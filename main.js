@@ -2,6 +2,7 @@ function init(){
     console.log("LD38");
     ce = document.getElementById('ce');
     c = ce.getContext('2d');
+    c.imageSmoothingEnabled = false;
     px = 16;
     xoffset = 29;
     yoffset = 19;
@@ -33,11 +34,12 @@ function init(){
     protectionsuit = regimg('protection_suit');
     pickaxe = regimg('pickaxe');
     gun = regimg('gun');
-//    spade = regimg('spade');
+    wood = regimg('wood');
+    spade = regimg('spade');
     inventoryimages = ({
         12: axe, 12.25: rope, 12.5: protectionsuit,
         12.75: pickaxe, 11: gun, 7: rock2,
-        2: tree2 /*, 14: spade*/
+        2: wood, 14: spade
     });
     makegrounds();
     terrainnames = ['ocean','land_1','land_2','land_12',
@@ -51,7 +53,7 @@ function init(){
     }
     ocean = terrains[0];
     loc = [4, 43];
-    inventory = [14];
+    inventory = [14]
     focus = 0;
     inventoryopened = true;
     hasaxe = false;
@@ -59,6 +61,8 @@ function init(){
     hasprotectionsuit = false;
     haspickaxe = false;
     hasgun = false;
+    hardwood = 0;
+    lightwood = 0;
     document.addEventListener('keydown', keydownlistener);
 }
 
@@ -94,17 +98,24 @@ function redraw(){
     c.drawImage(person, xoffset*px, yoffset*px);
 
     if(inventoryopened){
-        c.fillStyle = '#9c6d37';
-        c.fillRect(8, 8, 4+(4+16)*(inventory.length), 24);
-        
+        c.fillStyle = '#0097c0';
+        c.fillRect(8, 8, 4+(4+32)*(inventory.length), 8+32);
+        c.fillStyle = '#14d9ff';
+        c.fillRect(8+(4+32)*focus, 8, 8+32, 8+32);
+        var objn;
+        for(objn = 0; objn < inventory.length; objn++){
+            c.drawImage(inventoryimages[inventory[objn]], 8+4+(4+32)*objn, 8+4, 32, 32);
+        }
     }else{
-        
+        c.fillStyle = '#0097c0';
+        c.fillRect(8, 8, 8+32, 8+32);
+        c.drawImage(inventoryimages[inventory[focus]], 8+4, 8+4, 32, 32);
     }
 }
 
 function keydownlistener(e){
     var newloc;
-    console.log(e);
+    //console.log(e);
     var newloc = loc;
     switch(e.code){
     case 'ArrowUp': case 'KeyW':
@@ -138,7 +149,22 @@ function keydownlistener(e){
     }
     switch(Math.floor(vl(newloc))){
     case 0: break;
-    case 2: terra[newloc[1]][newloc[0]] = 8; break;
+    case 2: if(inventory[focus] == 12){terra[newloc[1]][newloc[0]] = 8;}else{timedialog('Wood is too hard to cut through.');} break;
+    case 10: if(inventory[focus] == 12){terra[newloc[1]][newloc[0]] = 8;}else{timedialog('Wood is too hard to cut through.');} break;
+    case 3: case 4: if(inventory[focus]==12.25){loc = newloc;}else{timedialog('Mountain is too hard to climb.');} break;
+    case 7: if(inventory[focus]==12.75){terra[newloc[1]][newloc[0]] = 1;}else{timedialog('Rock is too hard to climb across.');}break;
+    case 9: converse(['This statue holds a story.']); break;
+    case 12:
+        switch(newloc[0]){
+        case 11: if(!hasaxe){hasaxe = true; inventoryopened = true; inventory.push(12); timedialog('Found an axe!');} break;
+        case 41: if(!hasrope){hasrope = true; inventoryopened = true; inventory.push(12.25); timedialog('Found a rope!');} break;
+        case 65: if(!hasprotectionsuit){hasprotectionsuit = true; inventoryopened = true; inventory.push(12.5);timedialog('Found a protection suit!');} break;
+        case 112: if(!haspickaxe){haspickaxe = true; inventoryopened = true; inventory.push(12.75); timedialog('Found a pickaxe!');} break;
+        }
+    case 11:
+        switch(newloc[0]){
+        case 96: if(!hasgun){hasgun = true; inventoryopened = true; inventory.push(11);} break;
+        }
     default: loc = newloc;
     }
     redraw();
@@ -203,3 +229,10 @@ function regimg(name){
     return s;
 }
 
+function timedialog(str){
+    console.log(str);
+}
+
+function converse(strlist){
+    console.log(strlist);
+}
