@@ -3,13 +3,16 @@ function init(){
     ce = document.getElementById('ce');
     c = ce.getContext('2d');
     px = 16;
-    loc = [4, 43];
     xoffset = 29;
     yoffset = 19;
     xlim = 60;
     ylim = 40;
     loaded = 0;
     totalimg = 0;
+    lavaxmin = 43
+    lavaxmax = 74
+    lavaymin = 0
+    lavaymax = 40
     person = regimg('char');
     grass = regimg('grass');
     tree1 = regimg('tree1');
@@ -25,10 +28,6 @@ function init(){
     mountain = regimg('mountain');
     volcano = regimg('volcano');
     hugemountain = regimg('huge_mountain');
-    lxmin = -100;
-    lxmax = 100;
-    lymin = -100;
-    lymax = 100;
     makegrounds();
     terrainnames = ['ocean','land_1','land_2','land_12',
                     'land_3','land_13','land_23','land_123',
@@ -40,6 +39,7 @@ function init(){
         terrains[i] = regimg(terrainnames[i]);
     }
     ocean = terrains[0];
+    loc = [4, 43];
     document.addEventListener('keydown', keydownlistener);
 }
 
@@ -76,6 +76,7 @@ function redraw(){
 }
 
 function keydownlistener(e){
+    var newloc;
     console.log(e);
     var newloc = loc;
     switch(e.code){
@@ -140,3 +141,4 @@ function regimg(name){
     s.src = 'img/' + name + '.png';
     return s;
 }
+

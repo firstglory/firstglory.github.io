@@ -23,6 +23,7 @@ colorlist = [(255,255,255), (208,181,0), (0,153,0), (0,120,120), (0,130,130), (0
 # 10 = light trees
 # 11 = hidden gun in stone
 # 12 = hidden item underground
+# 13 = lava
 
 lsts = []
 for j in range(y):
