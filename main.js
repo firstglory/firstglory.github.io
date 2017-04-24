@@ -14,7 +14,7 @@ function init(){
     lavaxmax = 74
     lavaymin = 0
     lavaymax = 40
-    person = regimg('char');
+    // person = regimg('char');
     grass = regimg('grass');
     tree1 = regimg('tree1');
     tree2 = regimg('tree2');
@@ -37,6 +37,17 @@ function init(){
     wood = regimg('wood');
     lightwood = regimg('light_wood');
     spade = regimg('spade');
+    lava = regimg('lava');
+    boat = regimg('boat');
+    charn = regimg('charn');
+    chars = regimg('chars');
+    charw = regimg('charw');
+    chare = regimg('chare');
+    charfacing = chars;
+    rabbitl = regimg('rabbit_left');
+    rabbitr = regimg('rabbit_right');
+    wolfl = regimg('wolf_left');
+    wolfr = regimg('wolf_right');
     inventoryimages = ({
         12: axe, 12.25: rope, 12.5: protectionsuit,
         12.75: pickaxe, 11: gun, 7: rock2,
@@ -52,8 +63,17 @@ function init(){
     for(i in terrainnames){
         terrains[i] = regimg(terrainnames[i]);
     }
+    audio1 = new Audio();
+    audio1.autoplay = true;
+    audio1.loop = true;
+    audio1.src = 'A01.wav';
+    audio2 = new Audio();
+    audio2.loop = true;
+    audio2.src = 'B01-7.wav';
+    nowplaying = 1;
     ocean = terrains[0];
-    loc = [4, 43];
+    //    loc = [4, 43];
+    loc = [52, 22];
     inventory = [14]
     focus = 0;
     inventoryopened = true;
@@ -66,6 +86,8 @@ function init(){
     hardwoodpos = false;
     lightwood = 0;
     lightwoodpos = false;
+    haserupted = false;
+    eruptionmap = maperuption();
     document.addEventListener('keydown', keydownlistener);
 }
 
@@ -83,22 +105,28 @@ function redraw(){
     }
     for(j=0; j<ylim+8; j++) for(i=0; i<xlim; i++) {
         switch(v(loc[0]+i-xoffset, loc[1]+j-yoffset)){
+        case 13: c.drawImage(lava, i*px-2, j*px-2); break;
+        }
+    }
+    for(j=0; j<ylim+8; j++) for(i=0; i<xlim; i++) {
+        switch(v(loc[0]+i-xoffset, loc[1]+j-yoffset)){
         case 2: c.drawImage(tree1, i*px, j*px); break;
         case 2.25: c.drawImage(tree2, i*px-4, j*px-4); break;
         case 2.5: c.drawImage(tree3, i*px-8, j*px-8); break;
         case 7: c.drawImage(rock1, i*px, j*px); break;
         case 7.25: c.drawImage(rock2, i*px, j*px); break;
         case 7.5: c.drawImage(rock3, i*px-4, j*px-4); break;
+        case 11: c.drawImage(rock2, i*px, j*px); break;
         case 9: c.drawImage(monument, i*px, j*px); break;
         case 10: c.drawImage(ltree1, i*px, j*px); break;
         case 10.25: c.drawImage(ltree2, i*px-4, j*px-4); break;
         case 10.5: c.drawImage(ltree3, i*px-8, j*px-8); break;
         case 4: c.drawImage(mountain, i*px, j*px-64); break;
-        case 6: c.drawImage(volcano, i*px, j*px-64); break;
+        case 6: c.drawImage(volcano, i*px-24, j*px-48); break;
         case 5: c.drawImage(hugemountain, i*px, j*px-128); break;
         }
     }
-    c.drawImage(person, xoffset*px, yoffset*px);
+    c.drawImage(charfacing, xoffset*px, yoffset*px);
 
     if(inventoryopened){
         c.fillStyle = '#0097c0';
@@ -123,15 +151,19 @@ function keydownlistener(e){
     switch(e.code){
     case 'ArrowUp': case 'KeyW':
         inventoryopened = false;
+        charfacing = charn;
         newloc=[loc[0], loc[1]-1]; break;
     case 'ArrowDown': case 'KeyS':
         inventoryopened = false;
+        charfacing = chars;
         newloc=[loc[0], loc[1]+1]; break;
     case 'ArrowLeft': case 'KeyA':
         inventoryopened = false;
+        charfacing = charw;
         newloc=[loc[0]-1, loc[1]]; break;
     case 'ArrowRight': case 'KeyD':
         inventoryopened = false;
+        charfacing = chare;
         newloc=[loc[0]+1, loc[1]]; break;
     case 'KeyQ':
         inventoryopened = true;
@@ -183,6 +215,12 @@ function keydownlistener(e){
             loc = newloc;
         }
     default: loc = newloc;
+    }
+    if(ccode(loc) in eruptionmap){
+        if(!haserupted){
+            haserupted = true;
+            erupt();
+        }
     }
     redraw();
 }
@@ -252,4 +290,60 @@ function timedialog(str){
 
 function converse(strlist){
     console.log(strlist);
+}
+
+function maperuption(){
+    var start = [52, 22];
+    var q = [start];
+    var ptr = 0;
+    var objs = ({});
+    var nowloc, nextloc, i;
+    objs[ccode(start)] = [start, 1];
+    while(ptr < q.length){
+        nowloc = q[ptr];
+        for (i=0; i<4; i++){
+            nextloc = addv(nowloc,([[0,1],[0,-1],[1,0],[-1,0]])[i]);
+            if(vl(nextloc) != 0 && vl(nextloc) != 4 && vl(nextloc) != 3 && ! (nextloc[0] >= 67 && nextloc[1] < 17)){
+                if(ccode(nextloc) in objs){}else{
+                    q.push(nextloc);
+                    objs[ccode(nextloc)] = [nextloc, objs[ccode(nowloc)][1] + 1];
+                }
+            }
+        }
+        ptr++;
+    }
+    return objs;
+}
+
+function ccode(L){
+    return 'a'+L[0]+'b'+L[1];
+}
+
+function addv(L, M){
+    return [L[0]+M[0], L[1]+M[1]];
+}
+
+function erupt(){
+    erupttime = 0;
+    setmusic(2);
+    setInterval(eruptstep, 1000);
+}
+
+function eruptstep(){
+    erupttime ++;
+    var i;
+    for(i in eruptionmap){
+        if(erupttime == eruptionmap[i][1] && vl(eruptionmap[i][0]) != 6){
+            terra[eruptionmap[i][0][1]][eruptionmap[i][0][0]] = 13;
+        }
+    }
+    redraw();
+}
+
+function setmusic(n){
+    if(nowplaying != n){
+        if(n==1){ audio1.play(); audio2.pause(); }
+        if(n==2){ audio1.pause(); audio2.play(); }
+        nowplaying = n;
+    }
 }

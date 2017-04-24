@@ -47,3 +47,6 @@ count items
 wood
 rock
 light wood
+
+horizontal stopper [67, 17]
+
