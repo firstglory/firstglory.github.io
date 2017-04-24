@@ -54,15 +54,15 @@ function redraw(){
         case 2:
             c.drawImage(tree1, i*px, j*px); break;
         case 2.25:
-            c.drawImage(tree2, i*px, j*px); break;
+            c.drawImage(tree2, i*px-4, j*px-4); break;
         case 2.5:
-            c.drawImage(tree3, i*px-4, j*px-4); break;
+            c.drawImage(tree3, i*px-8, j*px-8); break;
         case 7:
             c.drawImage(rock1, i*px, j*px); break;
         case 7.25:
-            c.drawImage(rock2, i*px-4, j*px-4); break;
+            c.drawImage(rock2, i*px, j*px); break;
         case 7.5:
-            c.drawImage(rock3, i*px-8, j*px-8); break;
+            c.drawImage(rock3, i*px-4, j*px-4); break;
         case 9:
             c.drawImage(monument, i*px, j*px); break;
         case 10:
