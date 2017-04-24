@@ -3,7 +3,7 @@ function init(){
     ce = document.getElementById('ce');
     c = ce.getContext('2d');
     px = 16;
-    loc = [40, 50];
+    loc = [4, 43];
     xoffset = 29;
     yoffset = 19;
     xlim = 60;
@@ -20,6 +20,27 @@ function init(){
     person = new Image();
     person.onload = imgloader;
     person.src = "img/char.png"
+    grass = new Image();
+    grass.onload = imgloader;
+    grass.src = "img/grass.png"
+    tree1 = new Image();
+    tree1.onload = imgloader;
+    tree1.src = "img/tree1.png"
+    tree2 = new Image();
+    tree2.onload = imgloader;
+    tree2.src = "img/tree2.png"
+    tree3 = new Image();
+    tree3.onload = imgloader;
+    tree3.src = "img/tree3.png"
+    rock1 = new Image();
+    rock1.onload = imgloader;
+    rock1.src = "img/rock1.png"
+    rock2 = new Image();
+    rock2.onload = imgloader;
+    rock2.src = "img/rock2.png"
+    rock3 = new Image();
+    rock3.onload = imgloader;
+    rock3.src = "img/rock3.png"
 /*    wolf = new Image();
     wolf.onload = imgloader;
     wolf.src = "wolf.png"*/
@@ -39,8 +60,9 @@ function init(){
         terrains[i].onload = imgloader;
         terrains[i].src = 'img/'+terrainnames[i]+'.png';
     }
+    ocean = terrains[0];
     loaded = 0;
-    totalimg = 1+16;
+    totalimg = 8+16;
     document.addEventListener('keydown', keydownlistener);
 }
 
@@ -48,8 +70,26 @@ init();
 
 function redraw(){
     var i, j;
-    for(i=0; i<xlim; i++) for(j=0; j<ylim; j++) {
-        c.drawImage(visitor(loc[0]+i-xoffset, loc[1]+j-yoffset), i*px, j*px);
+    for(i=0; i<=xlim; i++) for(j=0; j<=ylim; j++) {
+        c.drawImage(visitor(loc[0]+i-xoffset, loc[1]+j-yoffset), (i-1/2)*px, (j-1/2)*px);
+    }
+    for(i=0; i<xlim; i++) for(j=0; j<ylim; j++){
+        switch(v(loc[0]+i-xoffset, loc[1]+j-yoffset)){
+        case 8:
+            c.drawImage(grass, i*px-2, j*px-2); break;
+        case 2:
+            c.drawImage(tree1, i*px-2, j*px-2); break;
+        case 2.25:
+            c.drawImage(tree2, i*px-2, j*px-2); break;
+        case 2.5:
+            c.drawImage(tree3, i*px-2, j*px-2); break;
+        case 7:
+            c.drawImage(rock1, i*px-2, j*px-2); break;
+        case 7.25:
+            c.drawImage(rock2, i*px-2, j*px-2); break;
+        case 7.5:
+            c.drawImage(rock3, i*px-2, j*px-2); break;
+        }
     }
     c.drawImage(person, xoffset*px, yoffset*px);
 }
@@ -58,15 +98,19 @@ function keydownlistener(e){
     console.log(e);
     switch(e.code){
     case 'ArrowUp': case 'KeyW':
-        if(visitor(loc[0],loc[1]-1) == terrains[15]) loc[1]--; break;
+        if(movable(v(loc[0],loc[1]-1))) loc[1]--; break;
     case 'ArrowDown': case 'KeyS':
-        if(visitor(loc[0],loc[1]+1) == terrains[15]) loc[1]++; break;
+        if(movable(v(loc[0],loc[1]+1))) loc[1]++; break;
     case 'ArrowLeft': case 'KeyA':
-        if(visitor(loc[0]-1,loc[1]) == terrains[15]) loc[0]--; break;
+        if(movable(v(loc[0]-1,loc[1]))) loc[0]--; break;
     case 'ArrowRight': case 'KeyD':
-        if(visitor(loc[0]+1,loc[1]) == terrains[15]) loc[0]++; break;
+        if(movable(v(loc[0]+1,loc[1]))) loc[0]++; break;
     }
     redraw();
+}
+
+function movable(t){
+    return (t != 0 && t != 7 && t != 7.25 && t != 7.5 && t != 2 && t != 2.25 && t != 2.5);
 }
 
 function imgloader(){
@@ -75,7 +119,7 @@ function imgloader(){
 }
 
 function visitor(x, y){
-    return terrains[terragen(v(x,y), v(x+1,y), v(x,y+1), v(x+1,y+1))];
+    return terrains[terragen(v01(x-1,y-1), v01(x,y-1), v01(x-1,y), v01(x,y))];
 }
 
 function terragen(a, b, c, d){
@@ -86,9 +130,25 @@ function v(x, y){
     return (x>=lxmin && x<lxmax && y>=lymin && y<lymax) ? terra[y][x] : 0;
 }
 
+function v01(x, y){
+    return (x>=lxmin && x<lxmax && y>=lymin && y<lymax) ? (terra[y][x]>0 ? 1 : 0) : 0;
+}
+
 function makegrounds(){
     lxmin = 0;
     lxmax = (terra[0]).length;
     lymin = 0;
     lymax = (terra).length;
+    var i, j, roll;
+    for(i=lymin; i<lymax; i++) for(j=lxmin; j<lxmax; j++){
+        if(terra[i][j] == 2){
+            roll = Math.random();
+            if(roll<1/3){ terra[i][j] = 2.25 }
+            else if(roll<2/3){ terra[i][j] = 2.5 }
+        }else if(terra[i][j] == 7){
+            roll = Math.random();
+            if(roll<1/3){ terra[i][j] = 7.25 }
+            else if(roll<2/3){ terra[i][j] = 7.5 }
+        }
+    }
 }
