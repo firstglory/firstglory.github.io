@@ -2,7 +2,7 @@ from PIL import Image
 import copy
 import json
 
-img = Image.open("land.png")
+img = Image.open("map2.png")
 data = img.getdata()
 x = data.size[0]
 y = data.size[1]
@@ -28,10 +28,10 @@ lsts = []
 for j in range(y):
 	lst = []
 	for i in range(x):
-                for k in range(len(colorlist)):
-		if (data[j*x+i][0], data[j*x+i][1], data[j*x+i][2]) == colorlist[k]:
-			lst.append(k)
-                        break
+		for k in range(len(colorlist)):
+			if (data[j*x+i][0], data[j*x+i][1], data[j*x+i][2]) == colorlist[k]:
+				lst.append(k)
+				break
 	lsts.append(copy.deepcopy(lst))
 
 for i in range(y):
