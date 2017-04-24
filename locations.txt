@@ -1,0 +1,49 @@
+# 0 = ocean
+# 1 = land
+# 2 = forest
+# 3 = mountain
+# 4 = image mountain
+# 5 = big mountain !!
+# 6 = volcano !!
+# 7 = rock
+# 8 = grass
+# 9 = statue !!
+# 10 = light trees
+# 11 = hidden gun in stone !!
+### 11 = gun
+### 11.5 = easter egg
+# 12 = hidden item underground !!
+### 12 = axe
+### 12.25 = rope
+### 12.5 = protection suit
+### 12.75 = pickaxe
+# 13 = lava (!!)
+# 14 = spade
+
+spawn point
+[4, 43]
+
+monuments
+[10, 56] /* forest, axe */
+[42, 46] /* forest, rope */
+[66, 34] /* protection suit */
+[112, 35] /* small peninsula, pickaxe */
+[88, 47] /* hint for gun */
+[76, 73] /* hint for boat */
+[60, 61] /* ufo */
+
+items
+axe             [11, 58]
+rope            [41, 46]
+protection suit [65, 36]
+pickaxe         [112, 37]
+gun             [96, 54]
+easter egg      [51, 42]
+
+special terrain
+active volcano  [52, 22]
+
+count items
+wood
+rock
+light wood
