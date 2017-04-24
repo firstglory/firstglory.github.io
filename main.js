@@ -35,11 +35,12 @@ function init(){
     pickaxe = regimg('pickaxe');
     gun = regimg('gun');
     wood = regimg('wood');
+    lightwood = regimg('light_wood');
     spade = regimg('spade');
     inventoryimages = ({
         12: axe, 12.25: rope, 12.5: protectionsuit,
         12.75: pickaxe, 11: gun, 7: rock2,
-        2: wood, 14: spade
+        2: wood, 10: lightwood, 14: spade
     });
     makegrounds();
     terrainnames = ['ocean','land_1','land_2','land_12',
@@ -62,7 +63,9 @@ function init(){
     haspickaxe = false;
     hasgun = false;
     hardwood = 0;
+    hardwoodpos = false;
     lightwood = 0;
+    lightwoodpos = false;
     document.addEventListener('keydown', keydownlistener);
 }
 
@@ -149,8 +152,14 @@ function keydownlistener(e){
     }
     switch(Math.floor(vl(newloc))){
     case 0: break;
-    case 2: if(inventory[focus] == 12){terra[newloc[1]][newloc[0]] = 8;}else{timedialog('Wood is too hard to cut through.');} break;
-    case 10: if(inventory[focus] == 12){terra[newloc[1]][newloc[0]] = 8;}else{timedialog('Wood is too hard to cut through.');} break;
+    case 2: if(inventory[focus] == 12){terra[newloc[1]][newloc[0]] = 8; hardwood++;
+                                       if(hardwood==1){hardwoodpos = inventory.length; inventory.push(2);}
+                                       inventoryopened = true;
+                                      }else{timedialog('Wood is too hard to cut through.');} break;
+    case 10: if(inventory[focus] == 12){terra[newloc[1]][newloc[0]] = 8; lightwood++;
+                                        if(lightwood==1){lightwoodpos = inventory.length; inventory.push(10);}
+                                        inventoryopened = true;
+                                       }else{timedialog('Wood is too hard to cut through.');} break;
     case 3: case 4: if(inventory[focus]==12.25){loc = newloc;}else{timedialog('Mountain is too hard to climb.');} break;
     case 7: if(inventory[focus]==12.75){terra[newloc[1]][newloc[0]] = 1;}else{timedialog('Rock is too hard to climb across.');}break;
     case 9: converse(['This statue holds a story.']); break;
