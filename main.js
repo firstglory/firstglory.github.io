@@ -22,6 +22,9 @@ function init(){
     rock2 = regimg('rock2');
     rock3 = regimg('rock3');
     monument = regimg('monument');
+    mountain = regimg('mountain');
+    volcano = regimg('volcano');
+    hugemountain = regimg('huge_mountain');
     lxmin = -100;
     lxmax = 100;
     lymin = -100;
@@ -47,30 +50,26 @@ function redraw(){
     for(i=0; i<=xlim; i++) for(j=0; j<=ylim; j++) {
         c.drawImage(visitor(loc[0]+i-xoffset, loc[1]+j-yoffset), (i-1/2)*px, (j-1/2)*px);
     }
-    for(i=0; i<xlim; i++) for(j=0; j<ylim; j++){
+    for(i=0; i<xlim; i++) for(j=0; j<ylim+8; j++){
         switch(v(loc[0]+i-xoffset, loc[1]+j-yoffset)){
-        case 8:
-            c.drawImage(grass, i*px-2, j*px-2); break;
-        case 2:
-            c.drawImage(tree1, i*px, j*px); break;
-        case 2.25:
-            c.drawImage(tree2, i*px-4, j*px-4); break;
-        case 2.5:
-            c.drawImage(tree3, i*px-8, j*px-8); break;
-        case 7:
-            c.drawImage(rock1, i*px, j*px); break;
-        case 7.25:
-            c.drawImage(rock2, i*px, j*px); break;
-        case 7.5:
-            c.drawImage(rock3, i*px-4, j*px-4); break;
-        case 9:
-            c.drawImage(monument, i*px, j*px); break;
-        case 10:
-            c.drawImage(ltree1, i*px, j*px); break;
-        case 10.25:
-            c.drawImage(ltree2, i*px-4, j*px-4); break;
-        case 10.5:
-            c.drawImage(ltree3, i*px-8, j*px-8); break;
+        case 8: c.drawImage(grass, i*px-2, j*px-2); break;
+        }
+    }
+    for(i=0; i<xlim; i++) for(j=0; j<ylim+8; j++){
+        switch(v(loc[0]+i-xoffset, loc[1]+j-yoffset)){
+        case 2: c.drawImage(tree1, i*px, j*px); break;
+        case 2.25: c.drawImage(tree2, i*px-4, j*px-4); break;
+        case 2.5: c.drawImage(tree3, i*px-8, j*px-8); break;
+        case 7: c.drawImage(rock1, i*px, j*px); break;
+        case 7.25: c.drawImage(rock2, i*px, j*px); break;
+        case 7.5: c.drawImage(rock3, i*px-4, j*px-4); break;
+        case 9: c.drawImage(monument, i*px, j*px); break;
+        case 10: c.drawImage(ltree1, i*px, j*px); break;
+        case 10.25: c.drawImage(ltree2, i*px-4, j*px-4); break;
+        case 10.5: c.drawImage(ltree3, i*px-8, j*px-8); break;
+        case 4: c.drawImage(mountain, i*px, j*px-64); break;
+        case 6: c.drawImage(volcano, i*px, j*px-64); break;
+        case 5: c.drawImage(hugemountain, i*px, j*px-128); break;
         }
     }
     c.drawImage(person, xoffset*px, yoffset*px);
@@ -78,22 +77,24 @@ function redraw(){
 
 function keydownlistener(e){
     console.log(e);
+    var newloc = loc;
     switch(e.code){
     case 'ArrowUp': case 'KeyW':
-        if(movable(v(loc[0],loc[1]-1))) loc[1]--; break;
+        newloc=[loc[0], loc[1]-1]; break;
     case 'ArrowDown': case 'KeyS':
-        if(movable(v(loc[0],loc[1]+1))) loc[1]++; break;
+        newloc=[loc[0], loc[1]+1]; break;
     case 'ArrowLeft': case 'KeyA':
-        if(movable(v(loc[0]-1,loc[1]))) loc[0]--; break;
+        newloc=[loc[0]-1, loc[1]]; break;
     case 'ArrowRight': case 'KeyD':
-        if(movable(v(loc[0]+1,loc[1]))) loc[0]++; break;
+        newloc=[loc[0]+1, loc[1]]; break;
     }
+    if(movable(newloc)) loc=newloc;
     redraw();
 }
 
-function movable(t){
+function movable(L){
     //    return (t != 0 && t != 7 && t != 7.25 && t != 7.5 && t != 2 && t != 2.25 && t != 2.5);
-    return (t!=0);
+    return (v(L[0], L[1])!=0);
 }
 
 function imgloader(){
