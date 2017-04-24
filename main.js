@@ -164,15 +164,23 @@ function keydownlistener(e){
     case 7: if(inventory[focus]==12.75){terra[newloc[1]][newloc[0]] = 1;}else{timedialog('Rock is too hard to climb across.');}break;
     case 9: converse(['This statue holds a story.']); break;
     case 12:
-        switch(newloc[0]){
-        case 11: if(!hasaxe){hasaxe = true; inventoryopened = true; inventory.push(12); timedialog('Found an axe!');} break;
-        case 41: if(!hasrope){hasrope = true; inventoryopened = true; inventory.push(12.25); timedialog('Found a rope!');} break;
-        case 65: if(!hasprotectionsuit){hasprotectionsuit = true; inventoryopened = true; inventory.push(12.5);timedialog('Found a protection suit!');} break;
-        case 112: if(!haspickaxe){haspickaxe = true; inventoryopened = true; inventory.push(12.75); timedialog('Found a pickaxe!');} break;
+        if(inventory[focus]==14){
+            switch(newloc[0]){
+            case 11: if(!hasaxe){hasaxe = true; inventoryopened = true; inventory.push(12); timedialog('Found an axe!');} break;
+            case 41: if(!hasrope){hasrope = true; inventoryopened = true; inventory.push(12.25); timedialog('Found a rope!');} break;
+            case 65: if(!hasprotectionsuit){hasprotectionsuit = true; inventoryopened = true; inventory.push(12.5);timedialog('Found a protection suit!');} break;
+            case 112: if(!haspickaxe){haspickaxe = true; inventoryopened = true; inventory.push(12.75); timedialog('Found a pickaxe!');} break;
+            }
+        }else{
+            loc = newloc;
         }
     case 11:
-        switch(newloc[0]){
-        case 96: if(!hasgun){hasgun = true; inventoryopened = true; inventory.push(11);} break;
+        if(inventory[focus]==12.75){
+            switch(newloc[0]){
+            case 96: if(!hasgun){hasgun = true; inventoryopened = true; inventory.push(11);} break;
+            }
+        }else{
+            loc = newloc;
         }
     default: loc = newloc;
     }
