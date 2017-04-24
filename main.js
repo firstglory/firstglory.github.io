@@ -47,15 +47,15 @@ init();
 
 function redraw(){
     var i, j;
-    for(i=0; i<=xlim; i++) for(j=0; j<=ylim; j++) {
+    for(j=0; j<=ylim; j++) for(i=0; i<=xlim; i++) {
         c.drawImage(visitor(loc[0]+i-xoffset, loc[1]+j-yoffset), (i-1/2)*px, (j-1/2)*px);
     }
-    for(i=0; i<xlim; i++) for(j=0; j<ylim+8; j++){
+    for(j=0; j<ylim+8; j++) for(i=0; i<xlim; i++) {
         switch(v(loc[0]+i-xoffset, loc[1]+j-yoffset)){
         case 8: c.drawImage(grass, i*px-2, j*px-2); break;
         }
     }
-    for(i=0; i<xlim; i++) for(j=0; j<ylim+8; j++){
+    for(j=0; j<ylim+8; j++) for(i=0; i<xlim; i++) {
         switch(v(loc[0]+i-xoffset, loc[1]+j-yoffset)){
         case 2: c.drawImage(tree1, i*px, j*px); break;
         case 2.25: c.drawImage(tree2, i*px-4, j*px-4); break;
