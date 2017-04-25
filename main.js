@@ -48,10 +48,12 @@ function init(){
     rabbitr = regimg('rabbit_right');
     wolfl = regimg('wolf_left');
     wolfr = regimg('wolf_right');
+    UFO = regimg('UFO'); // modified
+    end = regimg('the_end'); // modified
     inventoryimages = ({
         12: axe, 12.25: rope, 12.5: protectionsuit,
         12.75: pickaxe, 11: gun, 7: rock2,
-        2: wood, 10: lightwood, 14: spade
+        2: wood, 10: lightwood, 14: spade,
     });
     makegrounds();
     terrainnames = ['ocean','land_1','land_2','land_12',
@@ -72,8 +74,8 @@ function init(){
     audio2.src = 'B01-7.wav';
     nowplaying = 1;
     ocean = terrains[0];
-    //    loc = [4, 43];
-    loc = [52, 22];
+    loc = [4, 43];
+    // loc = [64, 36];
     inventory = [14]
     focus = 0;
     inventoryopened = true;
@@ -89,6 +91,10 @@ function init(){
     haserupted = false;
     eruptionmap = maperuption();
     document.addEventListener('keydown', keydownlistener);
+    // hasaxe = true; inventory.push(12); // modified
+    UFO_visible = false; // modified
+    xu = 54; // modified
+    yu = 60; // modified
 }
 
 init();
@@ -127,6 +133,9 @@ function redraw(){
         }
     }
     c.drawImage(charfacing, xoffset*px, yoffset*px);
+    if(UFO_visible){ // modified
+        c.drawImage(UFO, (xoffset+xu-loc[1])*16, (yoffset+yu-loc[0])*16);
+    }
 
     if(inventoryopened){
         c.fillStyle = '#0097c0';
@@ -183,7 +192,7 @@ function keydownlistener(e){
         break;
     }
     switch(Math.floor(vl(newloc))){
-    case 0: break;
+    case 0: if(lightwood >= 5){lightwood -= 5; terra[newloc[1]][newloc[0]] = 15;}else{break;} // modified
     case 2: if(inventory[focus] == 12){terra[newloc[1]][newloc[0]] = 8; hardwood++;
                                        if(hardwood==1){hardwoodpos = inventory.length; inventory.push(2);}
                                        inventoryopened = true;
@@ -194,7 +203,12 @@ function keydownlistener(e){
                                        }else{timedialog('Wood is too hard to cut through.');} break;
     case 3: case 4: if(inventory[focus]==12.25){loc = newloc;}else{timedialog('Mountain is too hard to climb.');} break;
     case 7: if(inventory[focus]==12.75){terra[newloc[1]][newloc[0]] = 1;}else{timedialog('Rock is too hard to climb across.');}break;
-    case 9: converse(['This statue holds a story.']); break;
+    case 9: // modified
+        converse(['This statue holds a story.']); 
+        if(((59-loc[0])*(59-loc[0])+(62-loc[1])*(62-loc[1])) < 4){
+            UFO_visible = true;
+        }
+        break;
     case 12:
         if(inventory[focus]==14){
             switch(newloc[0]){
@@ -214,6 +228,7 @@ function keydownlistener(e){
         }else{
             loc = newloc;
         }
+        break;
     default: loc = newloc;
     }
     if(ccode(loc) in eruptionmap){
@@ -285,7 +300,9 @@ function regimg(name){
 }
 
 function timedialog(str){
-    console.log(str);
+    c.font="20px Georgia";
+    c.fillText('hello world',10,50);
+    console.log(str)
 }
 
 function converse(strlist){
@@ -335,6 +352,9 @@ function eruptstep(){
     for(i in eruptionmap){
         if(erupttime == eruptionmap[i][1] && vl(eruptionmap[i][0]) != 6){
             terra[eruptionmap[i][0][1]][eruptionmap[i][0][0]] = 13;
+            if(loc[0]==eruptionmap[i][0][1] && loc[1]==eruptionmap[i][0][0]){ // modified
+                init();
+            }
         }
     }
     redraw();
@@ -342,6 +362,7 @@ function eruptstep(){
 
 function setmusic(n){
     if(nowplaying != n){
+        if(n==0){ audio1.pause(); audio2.pause();}
         if(n==1){ audio1.play(); audio2.pause(); }
         if(n==2){ audio1.pause(); audio2.play(); }
         nowplaying = n;
