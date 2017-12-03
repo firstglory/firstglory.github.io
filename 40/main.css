@@ -1,0 +1,10 @@
+html{
+    background-color:#2f374a;
+    text-align:center;
+}
+
+canvas{
+    background-color:#414974;
+    image-rendering:pixelated;
+}
+
