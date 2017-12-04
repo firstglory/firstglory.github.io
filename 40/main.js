@@ -13,8 +13,9 @@ function init(){
     avatar = pright;
     setInterval(redraw, 50);
     dimensions();
-    starthearing();
+    document.onkeydown = keylistener;
     createmap();
+    window.onresize = redraw;
 }
 
 function dimensions(){
@@ -22,10 +23,16 @@ function dimensions(){
     acols = 13;
     arows = acols;
     avision = acols * asize;
-    aw = canvas.width;
-    ah = canvas.height;
+    aw = Math.floor(window.innerWidth/2);
+    ah = Math.floor(window.innerHeight/2);
     aleft = (ah - arows * asize) / 2;
     atop = aleft;
+    canvas.style.width = (2*aw)+'px';
+    canvas.style.height = (2*ah)+'px';
+    canvas.width = aw;
+    canvas.height = ah;
+    awc=Math.round(aw/2)-asize/2;
+    ahc=Math.round(ah/2)-asize/2;
 }
 
 function createmap(){
@@ -58,26 +65,19 @@ function pgo(b){
 }
 
 function redraw(){
+    dimensions();
     c.clearRect(0, 0, aw, ah);
-    c.save(); // save current state to restore later
-    c.beginPath();
-    c.moveTo(aleft, atop);
-    c.lineTo(aleft+avision, atop);
-    c.lineTo(aleft+avision, atop+avision);
-    c.lineTo(aleft, atop+avision);
-    c.clip();
     var i, j, disp;
     for (i=0; i<arows; i++){
         for (j=0; j<acols; j++){
             if (map[[i,j]]){
-                c.drawImage(wall, aleft + asize * i, atop + asize * j);
+                c.drawImage(wall, awc+(i-loc[0])*asize, ahc+(j-loc[1])*asize);
             }else{
-                c.drawImage(floor, aleft + asize * i, atop + asize * j);
+                c.drawImage(floor, awc+(i-loc[0])*asize, ahc+(j-loc[1])*asize);
             }
         }
     }
-    c.restore(); // restore
-    c.drawImage(avatar, aleft + asize * loc[0], atop + asize * loc[1]);
+    c.drawImage(avatar, awc, ahc);
 }
 
 function regimg(name){
@@ -85,10 +85,6 @@ function regimg(name){
     s.onload = redraw;
     s.src = 'img/' + name + '.png';
     return s;
-}
-
-function starthearing(){
-    document.onkeydown = keylistener;
 }
 
 function keylistener(e){

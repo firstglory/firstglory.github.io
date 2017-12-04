@@ -1,6 +1,12 @@
 html{
     background-color:#2f374a;
-    text-align:center;
+}
+
+body{
+    padding:0px;
+    border:0px;
+    margin:0px;
+    overflow:hidden;
 }
 
 canvas{
@@ -8,6 +14,8 @@ canvas{
     image-rendering:pixelated;
     width:800px;
     height:640px;
+    padding:0px;
+    border:0px;
+    margin:0px;
 }
-
 
