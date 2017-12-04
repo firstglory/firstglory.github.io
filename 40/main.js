@@ -29,6 +29,7 @@ function resetgame(){
     makemap();
     gifage = 0;
     coincount = 0;
+    oset (cplus(loc, [5, 0]), 'end'); // test
 }
 
 function loadimages(){
@@ -145,7 +146,7 @@ function redraw(){
 
     // redraw
     switch(stage){
-    case 'play':
+    case 'play': case 'exit':
         var sprites;
         c.clearRect(0, 0, aw, ah);
         var i, j, k;
@@ -193,6 +194,22 @@ function redraw(){
         c.fillText ("Game Over", aw/2, ah/2);
         txtprep(24);
         c.fillText ("Press space to try again! :-)", aw/2, ah/2+asize*3);
+        break;
+    }
+    if (stage == 'exit'){
+        transage ++;
+        var whitealpha = Math.min(transage / 80, 1);
+        c.fillStyle = 'rgba(255,255,255,'+whitealpha+')';
+        c.fillRect(0, 0, aw, ah);
+        if (transage >= 120){
+            var blackalpha = Math.min((transage-120)/80, 1);
+            txtprep(48);
+            c.fillStyle = 'rgba(0,0,0,'+blackalpha+')';
+            c.fillText ("You win!", aw/2, ah/2);
+            txtprep(24);
+            c.fillStyle = 'rgba(0,0,0,'+blackalpha+')';
+            c.fillText ("Thank you for playing!", aw/2, ah/2+asize*3);
+        }
     }
 }
 
@@ -241,11 +258,14 @@ function keylistener(e){
                 oset(loc, 'floor');
                 coincount ++;
                 break;
+            case 'end':
+                stage = 'exit';
+                transage = 0;
             default: ;
             }
         }
         if (loc[0]%12==1 && loc[1]%12==1){
-            stage = 'gameover';
+            stage = 'gameover'; // test
         }
         redraw();
         break;
@@ -259,6 +279,10 @@ function keylistener(e){
             stage = 'play';
             resetgame();
         }
+        break;
+    case 'exit':
+        break;
+        
     }
 }
 
