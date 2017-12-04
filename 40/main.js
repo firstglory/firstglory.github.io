@@ -139,7 +139,7 @@ function redraw(){
     i1 = Math.ceil(isloc[0]+(aw-awc)/asize);
     j0 = Math.floor(isloc[1]-ahc/asize-1);
     j1 = Math.ceil(isloc[1]+(ah-ahc)/asize);
-    
+
     // redraw
     c.clearRect(0, 0, aw, ah);
     var i, j, sprite;
@@ -178,17 +178,17 @@ function regimg(name){
 function keylistener(e){
     var locnew;
     switch(e.code){
-    case 'ArrowRight': case 'KeyD':
+    case 'ArrowRight': case 'KeyD': case 'KeyL':
         locnew = cplus(loc, [1, 0]);
         avatar = pright;
         break;
-    case 'ArrowLeft': case 'KeyA':
+    case 'ArrowLeft': case 'KeyA': case 'KeyH':
         locnew = cplus(loc, [-1, 0]);
         avatar = pleft;
         break;
-    case 'ArrowUp': case 'KeyW':
+    case 'ArrowUp': case 'KeyW': case 'KeyK':
         locnew = cplus(loc, [0, -1]); break;
-    case 'ArrowDown': case 'KeyS':
+    case 'ArrowDown': case 'KeyS': case 'KeyJ':
         locnew = cplus(loc, [0, 1]); break;
     default:
         locnew = loc;
