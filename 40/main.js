@@ -31,13 +31,13 @@ function createmap(){
     for(i=0; i<13; i++){
         for(j=0; j<13; j++){
             if (i==0 || i==12 || j==0 || j==12){
-                disp = true;
+                disp = 'wall';
             } else if (i%2 == 0 && j%2 == 0){
-                disp = true;
+                disp = 'wall';
             } else if (i%2 == 1 && j%2 == 1){
-                disp = false;
+                disp = 'floor';
             } else {
-                disp = Math.random() < 0.5;
+                disp = (Math.random() < 0.5) ? 'wall' : 'floor';
             }
             map[[i,j]]=disp;
         }
@@ -91,9 +91,9 @@ function redraw(){
     for (i=i0; i<=i1; i++){
         for (j=j0; j<=j1; j++){
             switch (map[[i,j]]){
-            case true:
+            case 'wall':
                 sprite = wall; break;
-            case false:
+            case 'floor':
                 sprite = floor; break;
             case null: case undefined: default:
                 sprite = null; break;
@@ -132,10 +132,9 @@ function keylistener(e){
     default:
         locnew = loc;
     }
-    if (! map[locnew]){
+    if (map[locnew] == 'floor'){
         loc = locnew;
     }
     redraw();
 }
-
 
