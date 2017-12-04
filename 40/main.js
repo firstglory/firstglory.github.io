@@ -52,7 +52,7 @@ function createmap(){
             map[[i,j]]=disp;
         }
     }
-    loc = [1,1];
+    loc = [1,5];
 }
 
 function cplus(a, b){

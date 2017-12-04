@@ -10,7 +10,7 @@ body{
 }
 
 canvas{
-    background-color:#414974;
+//    background-color:#414974;
     image-rendering:pixelated;
     width:800px;
     height:640px;
