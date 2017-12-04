@@ -201,6 +201,8 @@ function redraw(){
         }else{
             c.drawImage(avatar, Math.round(awc+(loc[0]-isloc[0])*asize),
                         Math.round(ahc+(loc[1]-isloc[1])*asize));
+            txtprep(16);
+            c.fillText ('The dungeon has erupted! Run for your life!', aw/2, ah*3/4);
         }
         if (coincount > 0){
             txtprep(16);
