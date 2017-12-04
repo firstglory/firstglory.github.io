@@ -166,6 +166,10 @@ function redraw(){
         }
     }
     c.drawImage(avatar, awc, ahc);
+    c.textAlign = 'center';
+    c.font = '12px sans-serif';
+    c.fillStyle = 'white';
+    c.fillText("This is a sample text.", aw/2, ah/2);
 }
 
 function regimg(name){
@@ -178,17 +182,17 @@ function regimg(name){
 function keylistener(e){
     var locnew;
     switch(e.code){
-    case 'ArrowRight': case 'KeyD': case 'KeyL': case 'KeyF':
+    case 'ArrowRight': case 'KeyD': case 'KeyL': case 'KeyF': 
         locnew = cplus(loc, [1, 0]);
         avatar = pright;
         break;
-    case 'ArrowLeft': case 'KeyA': case 'KeyH': case 'KeyB':
+    case 'ArrowLeft': case 'KeyA': case 'KeyH': case 'KeyB': 
         locnew = cplus(loc, [-1, 0]);
         avatar = pleft;
         break;
-    case 'ArrowUp': case 'KeyW': case 'KeyK': case 'KeyP':
+    case 'ArrowUp': case 'KeyW': case 'KeyK': case 'KeyP': 
         locnew = cplus(loc, [0, -1]); break;
-    case 'ArrowDown': case 'KeyS': case 'KeyJ': case 'KeyN':
+    case 'ArrowDown': case 'KeyS': case 'KeyJ': case 'KeyN': 
         locnew = cplus(loc, [0, 1]); break;
     default:
         locnew = loc;
