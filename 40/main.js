@@ -11,28 +11,12 @@ function init(){
     pleft = regimg('person_left1');
     pright = regimg('person_right1');
     avatar = pright;
-    setInterval(redraw, 50);
+    setInterval(slocly, 25);
+    setInterval(redraw, 25);
     dimensions();
     document.onkeydown = keylistener;
     createmap();
     window.onresize = redraw;
-}
-
-function dimensions(){
-    asize = 24;
-    acols = 13;
-    arows = acols;
-    avision = acols * asize;
-    aw = Math.floor(window.innerWidth/2);
-    ah = Math.floor(window.innerHeight/2);
-    aleft = (ah - arows * asize) / 2;
-    atop = aleft;
-    canvas.style.width = (2*aw)+'px';
-    canvas.style.height = (2*ah)+'px';
-    canvas.width = aw;
-    canvas.height = ah;
-    awc=Math.round(aw/2)-asize/2;
-    ahc=Math.round(ah/2)-asize/2;
 }
 
 function createmap(){
@@ -53,27 +37,49 @@ function createmap(){
         }
     }
     loc = [1,5];
+    sloc = loc;
+}
+
+function slocly(){
+    sloc = cplus(sloc, scale(cplus(loc, scale(sloc, -1)), 5/10));
 }
 
 function cplus(a, b){
     return [a[0]+b[0], a[1]+b[1]];
 }
 
-function pgo(b){
-    loc[0] += b[0];
-    loc[1] += b[1];
+function scale(a, k){
+    return [a[0]*k, a[1]*k];
+}
+
+function dimensions(){
+    asize = 24;
+    acols = 13;
+    arows = acols;
+    avision = acols * asize;
+    aw = Math.floor(window.innerWidth/2);
+    ah = Math.floor(window.innerHeight/2);
+    aleft = (ah - arows * asize) / 2;
+    atop = aleft;
+    canvas.style.width = (2*aw)+'px';
+    canvas.style.height = (2*ah)+'px';
+    canvas.width = aw;
+    canvas.height = ah;
+    awc=Math.round(aw/2)-asize/2;
+    ahc=Math.round(ah/2)-asize/2;
 }
 
 function redraw(){
     dimensions();
+    isloc = sloc;
     c.clearRect(0, 0, aw, ah);
     var i, j, disp;
     for (i=0; i<arows; i++){
         for (j=0; j<acols; j++){
             if (map[[i,j]]){
-                c.drawImage(wall, awc+(i-loc[0])*asize, ahc+(j-loc[1])*asize);
+                c.drawImage(wall, Math.round(awc+(i-isloc[0])*asize), Math.round(ahc+(j-isloc[1])*asize));
             }else{
-                c.drawImage(floor, awc+(i-loc[0])*asize, ahc+(j-loc[1])*asize);
+                c.drawImage(floor, Math.round(awc+(i-isloc[0])*asize), Math.round(ahc+(j-isloc[1])*asize));
             }
         }
     }
