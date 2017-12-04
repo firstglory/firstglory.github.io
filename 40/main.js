@@ -288,6 +288,7 @@ function keylistener(e){
             case 'end':
                 stage = 'exit';
                 transage = 0;
+                break;
             default: ;
             }
         }
@@ -365,6 +366,9 @@ function lavagrows(){
             }
         }
         lavarain = newlavarain;
+    }
+    if (ofind(loc)=='lava' || ofind(loc)=='lavawisp'){
+        stage = 'gameover';
     }
 }
 
