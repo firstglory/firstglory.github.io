@@ -3,17 +3,19 @@ console.log("LD40");
 init();
 
 function init(){
+    terrax = terra[0].length;
+    terray = terra.length;
     canvas = document.getElementById('ce');
     c = canvas.getContext('2d');
     c.imageSmoothingEnabled = false;
     loadimages();
     avatar = pright;
+    makemap();
     setInterval(slocly, 25);
     setInterval(redraw, 25);
     dimensions();
     document.onkeydown = keylistener;
     // createmap();
-    makemap();
     window.onresize = redraw;
 }
 
@@ -48,10 +50,11 @@ function createmap(){
 }
 
 function makemap(){
-    for(i=0; i<terra[0].length; i++){
-        for(j=0; j<terra.length; j++){
-            if (terra[j][i] == 'start'){
+    for(i=0; i<terrax; i++){
+        for(j=0; j<terray; j++){
+            if (ofind([i,j]) == 'start'){
                 loc = [i,j];
+                sloc = loc;
                 return true;
             }
         }
@@ -59,8 +62,12 @@ function makemap(){
     return false;
 }
 
-function ofind(mylocation){
-    return terra[mylocation];
+function ofind(myloc){
+    if (myloc[0]<0 || myloc[0]>=terrax || myloc[1]<0 || myloc[1]>=terray){
+        return null;
+    }else{
+        return terra[myloc[1]][myloc[0]];
+    }
 }
 
 function slocly(){
@@ -152,7 +159,7 @@ function keylistener(e){
     default:
         locnew = loc;
     }
-    if (ofind(locnew) == 'floor'){
+    if (ofind(locnew) != 'wall'){
         loc = locnew;
     }
     redraw();
