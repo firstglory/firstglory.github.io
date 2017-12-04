@@ -46,8 +46,13 @@ function createmap(){
     sloc = loc; // camera location
 }
 
+function ofind(mylocation){
+    return map[mylocation];
+}
+
 function slocly(){
-    sloc = cplus(sloc, scale(cplus(loc, scale(sloc, -1)), 5/10));
+    //    sloc = cplus(sloc, scale(cplus(loc, scale(sloc, -1)), 5/10));
+    sloc = scale(cplus(sloc, loc), .5);
 }
 
 function cplus(a, b){
@@ -90,7 +95,7 @@ function redraw(){
     var i, j, sprite;
     for (i=i0; i<=i1; i++){
         for (j=j0; j<=j1; j++){
-            switch (map[[i,j]]){
+            switch (ofind([i,j])){
             case 'wall':
                 sprite = wall; break;
             case 'floor':
@@ -132,7 +137,7 @@ function keylistener(e){
     default:
         locnew = loc;
     }
-    if (map[locnew] == 'floor'){
+    if (ofind(locnew) == 'floor'){
         loc = locnew;
     }
     redraw();
