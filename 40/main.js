@@ -178,17 +178,17 @@ function regimg(name){
 function keylistener(e){
     var locnew;
     switch(e.code){
-    case 'ArrowRight': case 'KeyD': case 'KeyL':
+    case 'ArrowRight': case 'KeyD': case 'KeyL': case 'KeyF':
         locnew = cplus(loc, [1, 0]);
         avatar = pright;
         break;
-    case 'ArrowLeft': case 'KeyA': case 'KeyH':
+    case 'ArrowLeft': case 'KeyA': case 'KeyH': case 'KeyB':
         locnew = cplus(loc, [-1, 0]);
         avatar = pleft;
         break;
-    case 'ArrowUp': case 'KeyW': case 'KeyK':
+    case 'ArrowUp': case 'KeyW': case 'KeyK': case 'KeyP':
         locnew = cplus(loc, [0, -1]); break;
-    case 'ArrowDown': case 'KeyS': case 'KeyJ':
+    case 'ArrowDown': case 'KeyS': case 'KeyJ': case 'KeyN':
         locnew = cplus(loc, [0, 1]); break;
     default:
         locnew = loc;
