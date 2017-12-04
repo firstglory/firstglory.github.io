@@ -14,15 +14,23 @@ function init(){
 function dimensions(){
     asize = 24;
     acols = 13;
-    arows = 13;
-    ah = 320;
-    aw = 400;
-    atop = (ah - arows * asize) / 2;
-    aleft = atop;
+    arows = acols;
+    avision = acols * asize;
+    aw = canvas.width;
+    ah = canvas.height;
+    aleft = (ah - arows * asize) / 2;
+    atop = aleft;
 }
 
 function redraw(){
     c.clearRect(0, 0, aw, ah);
+    c.save(); // save current state to restore later
+    c.beginPath();
+    c.moveTo(aleft, atop);
+    c.lineTo(aleft+avision, atop);
+    c.lineTo(aleft+avision, atop+avision);
+    c.lineTo(aleft, atop+avision);
+    c.clip();
     var i, j, disp;
     for (i=0; i<arows; i++){
         for (j=0; j<acols; j++){
@@ -40,6 +48,7 @@ function redraw(){
             }
         }
     }
+    c.restore(); // restore
 }
 
 function regimg(name){
