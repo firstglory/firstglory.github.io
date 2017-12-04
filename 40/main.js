@@ -29,6 +29,10 @@ function resetgame(){
     makemap();
     gifage = 0;
     coincount = 0;
+    oset (cplus(startingpoint, [5, 5]), 'end'); // test
+    erupted = false;
+    slocatlava = false;
+    slocspeed = .5;
 }
 
 function loadimages(){
@@ -40,6 +44,7 @@ function loadimages(){
     pdown = regimg('person_down');
     coins = [regimg('coin'), regimg('coin2')];
     wisps = [regimg('wisp1'), regimg('wisp2'), regimg('wisp3')];
+    lavas = [regimg('lava1'), regimg('lava2'), regimg('lava3')];
     door = regimg('door');
     key = regimg('key');
     shadow = regimg('shadow');
@@ -50,6 +55,7 @@ function makemap(){
         for(j=0; j<terray; j++){
             if (ofind([i,j]) == 'start'){
                 loc = [i,j];
+                startingpoint = loc;
                 sloc = loc;
             }
         }
@@ -104,7 +110,13 @@ function isvisited(myloc){
 
 function slocly(){
     //    sloc = cplus(sloc, scale(cplus(loc, scale(sloc, -1)), 5/10));
-    sloc = scale(cplus(sloc, loc), .5);
+    var camera;
+    if(slocatlava){
+        camera = startingpoint;
+    }else{
+        camera = loc;
+    }
+    sloc = cplus(scale(sloc, 1-slocspeed), scale(camera, slocspeed));
 }
 
 function cplus(a, b){
@@ -145,7 +157,9 @@ function redraw(){
 
     // redraw
     switch(stage){
-    case 'play':
+    case 'lava':
+        
+    case 'play': case 'exit':
         var sprites;
         c.clearRect(0, 0, aw, ah);
         var i, j, k;
@@ -162,6 +176,11 @@ function redraw(){
                     sprites = [floor, coins[Math.floor(gifage/10)%2]]; break;
                 case 'wisp':
                     sprites = [floor, wisps[Math.floor(gifage/10)%3]]; break;
+                case 'lava':
+                    sprites = [lavas[(i+j+Math.floor(gifage/10))%3]]; break;
+                case 'lavawisp':
+                    sprites = [lavas[(i+j+Math.floor(gifage/10))%3], wisps[Math.floor(gifage/10)%3]]; break;
+                    
                 case null: case undefined: default:
                     sprites = []; break;
                 }
@@ -193,6 +212,22 @@ function redraw(){
         c.fillText ("Game Over", aw/2, ah/2);
         txtprep(24);
         c.fillText ("Press space to try again! :-)", aw/2, ah/2+asize*3);
+        break;
+    }
+    if (stage == 'exit'){
+        transage ++;
+        var whitealpha = Math.min(transage / 80, 1);
+        c.fillStyle = 'rgba(255,255,255,'+whitealpha+')';
+        c.fillRect(0, 0, aw, ah);
+        if (transage >= 120){
+            var blackalpha = Math.min((transage-120)/80, 1);
+            txtprep(48);
+            c.fillStyle = 'rgba(0,0,0,'+blackalpha+')';
+            c.fillText ("You win!", aw/2, ah/2);
+            txtprep(24);
+            c.fillStyle = 'rgba(0,0,0,'+blackalpha+')';
+            c.fillText ("Thank you for playing!", aw/2, ah/2+asize*3);
+        }
     }
 }
 
@@ -241,13 +276,29 @@ function keylistener(e){
                 oset(loc, 'floor');
                 coincount ++;
                 break;
+            case 'end':
+                stage = 'exit';
+                transage = 0;
             default: ;
             }
         }
-        if (loc[0]%12==1 && loc[1]%12==1){
-            stage = 'gameover';
+        if (loc[0] == cplus(startingpoint, [1, -5])[0] && loc[1] == cplus(startingpoint, [1, -5])[1]){
+            stage = 'gameover'; // test
+        }
+        if (!erupted){
+            var b0 = boundary(loc[0]);
+            var b1 = boundary(loc[1]);
+            if (b0[0]==2 || b0[1]==2 || b1[0]==3 || b1[1]==3){
+                erupted = true;
+                setInterval(lavagrows, 300);
+                setTimeout(eruptionpan, 20);
+                setTimeout(eruptionpanback, 2020);
+                setTimeout(eruptionpanbackfin, 3000);
+            }
         }
         redraw();
+        break;
+    case 'lava':
         break;
     case 'title':
         if (e.code == 'Space'){
@@ -259,6 +310,28 @@ function keylistener(e){
             stage = 'play';
             resetgame();
         }
+        break;
+    case 'exit':
+        break;
+        
     }
 }
 
+function eruptionpan(){
+    stage = 'lava';
+    slocatlava = true;
+    slocspeed = .1;
+}
+
+function eruptionpanback(){
+    slocatlava = false;
+}
+
+function eruptionpanbackfin(){
+    stage = 'play';
+    slocspeed = .5;
+}
+
+function lavagrows(){
+    
+}
