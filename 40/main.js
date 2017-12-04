@@ -12,7 +12,8 @@ function init(){
     setInterval(redraw, 25);
     dimensions();
     document.onkeydown = keylistener;
-    createmap();
+    // createmap();
+    makemap();
     window.onresize = redraw;
 }
 
@@ -46,8 +47,20 @@ function createmap(){
     sloc = loc; // camera location
 }
 
+function makemap(){
+    for(i=0; i<terra[0].length; i++){
+        for(j=0; j<terra.length; j++){
+            if (terra[j][i] == 'start'){
+                loc = [i,j];
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 function ofind(mylocation){
-    return map[mylocation];
+    return terra[mylocation];
 }
 
 function slocly(){
@@ -98,8 +111,10 @@ function redraw(){
             switch (ofind([i,j])){
             case 'wall':
                 sprite = wall; break;
-            case 'floor':
+            case 'floor': case 'start': case 'end':
                 sprite = floor; break;
+            case 'door':
+                sprite = coin; break;
             case null: case undefined: default:
                 sprite = null; break;
             }
