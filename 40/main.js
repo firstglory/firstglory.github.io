@@ -14,8 +14,10 @@ function init(){
     resetgame();
     setInterval(slocly, 25);
     setInterval(redraw, 25);
+    setInterval(lavagrows, 25);
     document.onkeydown = keylistener;
     window.onresize = redraw;
+    dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]];
 }
 
 function resetgame(){
@@ -31,6 +33,7 @@ function resetgame(){
     coincount = 0;
     oset (cplus(startingpoint, [5, 5]), 'end'); // test
     erupted = false;
+    lavarain = {};
     slocatlava = false;
     slocspeed = .5;
 }
@@ -158,7 +161,6 @@ function redraw(){
     // redraw
     switch(stage){
     case 'lava':
-        
     case 'play': case 'exit':
         var sprites;
         c.clearRect(0, 0, aw, ah);
@@ -194,7 +196,12 @@ function redraw(){
                 }
             }
         }
-        c.drawImage(avatar, awc, ahc);
+        if (stage != 'lava'){
+            c.drawImage(avatar, awc, ahc);
+        }else{
+            c.drawImage(avatar, Math.round(awc+(loc[0]-isloc[0])*asize),
+                        Math.round(ahc+(loc[1]-isloc[1])*asize));
+        }
         if (coincount > 0){
             txtprep(16);
             c.textAlign = 'right';
@@ -289,11 +296,7 @@ function keylistener(e){
             var b0 = boundary(loc[0]);
             var b1 = boundary(loc[1]);
             if (b0[0]==2 || b0[1]==2 || b1[0]==3 || b1[1]==3){
-                erupted = true;
-                setInterval(lavagrows, 300);
-                setTimeout(eruptionpan, 20);
-                setTimeout(eruptionpanback, 2020);
-                setTimeout(eruptionpanbackfin, 3000);
+                lettherebelava();
             }
         }
         redraw();
@@ -317,6 +320,15 @@ function keylistener(e){
     }
 }
 
+function lettherebelava(){
+    erupted = true;
+    oset (startingpoint, 'lava');
+    lavarain = [startingpoint];
+    setTimeout(eruptionpan, 20);
+    setTimeout(eruptionpanback, 2020);
+    setTimeout(eruptionpanbackfin, 3000);
+}
+
 function eruptionpan(){
     stage = 'lava';
     slocatlava = true;
@@ -333,5 +345,25 @@ function eruptionpanbackfin(){
 }
 
 function lavagrows(){
-    
+    if (erupted && gifage%40==0){
+        var n = lavarain.length;
+        var i, j, lavloc, nlavloc, newlavarain = [];
+        for (i=0; i<n; i++){
+            lavloc = lavarain[i];
+            for (j=0; j<4; j++){
+                nlavloc = cplus(lavloc, dirs[j]);
+                if (ofind(nlavloc) != 'wall' && ofind(nlavloc) != 'lava' && ofind(nlavloc) != 'lavawisp' && ofind(nlavloc) != 'end'){
+                    newlavarain.push(nlavloc);
+                    if (ofind(nlavloc) == 'wisp'){
+                        oset(nlavloc, 'lavawisp');
+                    }else{
+                        oset(nlavloc, 'lava');
+                    }
+                }
+            }
+        }
+        lavarain = newlavarain;
+    }
 }
+
+
