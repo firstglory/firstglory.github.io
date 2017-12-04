@@ -26,6 +26,7 @@ function loadimages(){
     pright = regimg('person_right1');
     coin = regimg('coin');
     key = regimg('key');
+    shadow = regimg('shadow');
 }
 
 function createmap(){
@@ -55,11 +56,11 @@ function makemap(){
             if (ofind([i,j]) == 'start'){
                 loc = [i,j];
                 sloc = loc;
-                return true;
             }
         }
     }
-    return false;
+    visited = {};
+    makevisited(loc);
 }
 
 function ofind(myloc){
@@ -68,6 +69,34 @@ function ofind(myloc){
     }else{
         return terra[myloc[1]][myloc[0]];
     }
+}
+
+function boundary(x){
+    if (x%12==0){
+        return [x/12-1, x/12];
+    }else{
+        return [Math.floor(x/12), Math.floor(x/12)];
+    }
+}
+
+function makevisited(myloc){
+    var b0 = boundary(myloc[0]);
+    var b1 = boundary(myloc[1]);
+    var i, j;
+    for (i=b0[0]; i<=b0[1]; i++) for (j=b1[0]; j<=b1[1]; j++){
+        visited[[i, j]] = true;
+    }
+}
+
+function isvisited(myloc){
+    var b0 = boundary(myloc[0]);
+    var b1 = boundary(myloc[1]);
+    for (i=b0[0]; i<=b0[1]; i++) for (j=b1[0]; j<=b1[1]; j++){
+        if([i, j] in visited){
+            return true;
+        }
+    }
+    return false;
 }
 
 function slocly(){
@@ -127,7 +156,11 @@ function redraw(){
             }
             if(sprite){
                 c.drawImage(sprite, Math.round(awc+(i-isloc[0])*asize),
-                                    Math.round(ahc+(j-isloc[1])*asize));
+                            Math.round(ahc+(j-isloc[1])*asize));
+                if (! isvisited([i, j])){
+                    c.drawImage(shadow, Math.round(awc+(i-isloc[0])*asize),
+                                Math.round(ahc+(j-isloc[1])*asize));
+                }
             }
         }
     }
@@ -161,6 +194,7 @@ function keylistener(e){
     }
     if (ofind(locnew) != 'wall'){
         loc = locnew;
+        makevisited(loc);
     }
     redraw();
 }
