@@ -3,20 +3,30 @@ console.log("LD40");
 init();
 
 function init(){
+    stage = 'title';
     terrax = terra[0].length;
     terray = terra.length;
     canvas = document.getElementById('ce');
     c = canvas.getContext('2d');
     c.imageSmoothingEnabled = false;
     loadimages();
-    avatar = pright;
-    makemap();
+
+    resetgame();
     setInterval(slocly, 25);
     setInterval(redraw, 25);
-    dimensions();
     document.onkeydown = keylistener;
-    // createmap();
     window.onresize = redraw;
+}
+
+function resetgame(){
+    var i, rmap;
+    rmap = [];
+    for (i=0; i<terray; i++){
+        rmap.push(terra[i].concat());
+    }
+    map = rmap;
+    avatar = pright;
+    makemap();
 }
 
 function loadimages(){
@@ -28,27 +38,6 @@ function loadimages(){
     door = regimg('door');
     key = regimg('key');
     shadow = regimg('shadow');
-}
-
-function createmap(){
-    map = {};
-    var disp, i, j;
-    for(i=0; i<13; i++){
-        for(j=0; j<13; j++){
-            if (i==0 || i==12 || j==0 || j==12){
-                disp = 'wall';
-            } else if (i%2 == 0 && j%2 == 0){
-                disp = 'wall';
-            } else if (i%2 == 1 && j%2 == 1){
-                disp = 'floor';
-            } else {
-                disp = (Math.random() < 0.5) ? 'wall' : 'floor';
-            }
-            map[[i,j]]=disp;
-        }
-    }
-    loc = [1,5];
-    sloc = loc; // camera location
 }
 
 function makemap(){
@@ -68,7 +57,7 @@ function ofind(myloc){
     if (myloc[0]<0 || myloc[0]>=terrax || myloc[1]<0 || myloc[1]>=terray){
         return null;
     }else{
-        return terra[myloc[1]][myloc[0]];
+        return map[myloc[1]][myloc[0]];
     }
 }
 
@@ -141,35 +130,54 @@ function redraw(){
     j1 = Math.ceil(isloc[1]+(ah-ahc)/asize);
 
     // redraw
-    c.clearRect(0, 0, aw, ah);
-    var i, j, sprite;
-    for (i=i0; i<=i1; i++){
-        for (j=j0; j<=j1; j++){
-            switch (ofind([i,j])){
-            case 'wall':
-                sprite = wall; break;
-            case 'floor': case 'start': case 'end':
-                sprite = floor; break;
-            case 'door':
-                sprite = door; break;
-            case null: case undefined: default:
-                sprite = null; break;
-            }
-            if(sprite){
-                c.drawImage(sprite, Math.round(awc+(i-isloc[0])*asize),
-                            Math.round(ahc+(j-isloc[1])*asize));
-                if (! isvisited([i, j])){
-                    c.drawImage(shadow, Math.round(awc+(i-isloc[0])*asize),
+    switch(stage){
+    case 'play':
+        c.clearRect(0, 0, aw, ah);
+        var i, j, sprite;
+        for (i=i0; i<=i1; i++){
+            for (j=j0; j<=j1; j++){
+                switch (ofind([i,j])){
+                case 'wall':
+                    sprite = wall; break;
+                case 'floor': case 'start': case 'end':
+                    sprite = floor; break;
+                case 'door':
+                    sprite = door; break;
+                case 'coin':
+                    sprite = coin; break;
+                case null: case undefined: default:
+                    sprite = null; break;
+                }
+                if(sprite){
+                    c.drawImage(sprite, Math.round(awc+(i-isloc[0])*asize),
                                 Math.round(ahc+(j-isloc[1])*asize));
+                    if (! isvisited([i, j])){
+                        c.drawImage(shadow, Math.round(awc+(i-isloc[0])*asize),
+                                    Math.round(ahc+(j-isloc[1])*asize));
+                    }
                 }
             }
         }
+        c.drawImage(avatar, awc, ahc);
+        break;
+    case 'title':
+        txtprep(48);
+        c.fillText ("Friendly Dungeon", aw/2, ah/2);
+        txtprep(24);
+        c.fillText ("Press space to start", aw/2, ah/2+asize*3);
+        break;
+    case 'gameover':
+        txtprep(48);
+        c.fillText ("Game Over", aw/2, ah/2);
+        txtprep(24);
+        c.fillText ("Press space to try again! :-)", aw/2, ah/2+asize*3);
     }
-    c.drawImage(avatar, awc, ahc);
+}
+
+function txtprep(size){
     c.textAlign = 'center';
-    c.font = '12px sans-serif';
+    c.font = size+'px sans-serif';
     c.fillStyle = 'white';
-    c.fillText("This is a sample text.", aw/2, ah/2);
 }
 
 function regimg(name){
@@ -180,27 +188,44 @@ function regimg(name){
 }
 
 function keylistener(e){
-    var locnew;
-    switch(e.code){
-    case 'ArrowRight': case 'KeyD': case 'KeyL': case 'KeyF': 
-        locnew = cplus(loc, [1, 0]);
-        avatar = pright;
+    switch(stage){
+    case 'play':
+        var locnew;
+        switch(e.code){
+        case 'ArrowRight': case 'KeyD': case 'KeyL': case 'KeyF': 
+            locnew = cplus(loc, [1, 0]);
+            avatar = pright;
+            break;
+        case 'ArrowLeft': case 'KeyA': case 'KeyH': case 'KeyB': 
+            locnew = cplus(loc, [-1, 0]);
+            avatar = pleft;
+            break;
+        case 'ArrowUp': case 'KeyW': case 'KeyK': case 'KeyP': 
+            locnew = cplus(loc, [0, -1]); break;
+        case 'ArrowDown': case 'KeyS': case 'KeyJ': case 'KeyN': 
+            locnew = cplus(loc, [0, 1]); break;
+        default:
+            locnew = loc;
+        }
+        if (ofind(locnew) != 'wall'){
+            loc = locnew;
+            makevisited(loc);
+        }
+        if (loc[0]%12==1 && loc[1]%12==1){
+            stage = 'gameover';
+        }
+        redraw();
         break;
-    case 'ArrowLeft': case 'KeyA': case 'KeyH': case 'KeyB': 
-        locnew = cplus(loc, [-1, 0]);
-        avatar = pleft;
+    case 'title':
+        if (e.code == 'Space'){
+            stage = 'play';
+        }
         break;
-    case 'ArrowUp': case 'KeyW': case 'KeyK': case 'KeyP': 
-        locnew = cplus(loc, [0, -1]); break;
-    case 'ArrowDown': case 'KeyS': case 'KeyJ': case 'KeyN': 
-        locnew = cplus(loc, [0, 1]); break;
-    default:
-        locnew = loc;
+    case 'gameover':
+        if (e.code == 'Space'){
+            stage = 'play';
+            resetgame();
+        }
     }
-    if (ofind(locnew) != 'wall'){
-        loc = locnew;
-        makevisited(loc);
-    }
-    redraw();
 }
 
