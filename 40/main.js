@@ -27,6 +27,8 @@ function resetgame(){
     map = rmap;
     avatar = pright;
     makemap();
+    gifage = 0;
+    coincount = 0;
 }
 
 function loadimages(){
@@ -34,7 +36,10 @@ function loadimages(){
     floor = regimg('floor');
     pleft = regimg('person_left1');
     pright = regimg('person_right1');
-    coin = regimg('coin');
+    pup = regimg('person_up');
+    pdown = regimg('person_down');
+    coins = [regimg('coin'), regimg('coin2')];
+    wisps = [regimg('wisp1'), regimg('wisp2'), regimg('wisp3')];
     door = regimg('door');
     key = regimg('key');
     shadow = regimg('shadow');
@@ -58,6 +63,14 @@ function ofind(myloc){
         return null;
     }else{
         return map[myloc[1]][myloc[0]];
+    }
+}
+
+function oset(myloc, name){
+    if (myloc[0]<0 || myloc[0]>=terrax || myloc[1]<0 || myloc[1]>=terray){
+        return null;
+    }else{
+        map[myloc[1]][myloc[0]] = name;
     }
 }
 
@@ -120,6 +133,7 @@ function dimensions(){
 }
 
 function redraw(){
+    gifage ++;
     // clarify dimensions and redraw boundaries
     dimensions();
     isloc = sloc;
@@ -132,33 +146,41 @@ function redraw(){
     // redraw
     switch(stage){
     case 'play':
+        var sprites;
         c.clearRect(0, 0, aw, ah);
-        var i, j, sprite;
+        var i, j, k;
         for (i=i0; i<=i1; i++){
             for (j=j0; j<=j1; j++){
                 switch (ofind([i,j])){
                 case 'wall':
-                    sprite = wall; break;
+                    sprites = [wall]; break;
                 case 'floor': case 'start': case 'end':
-                    sprite = floor; break;
+                    sprites = [floor]; break;
                 case 'door':
-                    sprite = door; break;
+                    sprites = [door]; break;
                 case 'coin':
-                    sprite = coin; break;
+                    sprites = [floor, coins[Math.floor(gifage/10)%2]]; break;
+                case 'wisp':
+                    sprites = [floor, wisps[Math.floor(gifage/10)%3]]; break;
                 case null: case undefined: default:
-                    sprite = null; break;
+                    sprites = []; break;
                 }
-                if(sprite){
-                    c.drawImage(sprite, Math.round(awc+(i-isloc[0])*asize),
+                for (k = 0; k < sprites.length; k++){
+                    c.drawImage(sprites[k], Math.round(awc+(i-isloc[0])*asize),
                                 Math.round(ahc+(j-isloc[1])*asize));
-                    if (! isvisited([i, j])){
-                        c.drawImage(shadow, Math.round(awc+(i-isloc[0])*asize),
-                                    Math.round(ahc+(j-isloc[1])*asize));
-                    }
+                }
+                if (! isvisited([i, j])){
+                    c.drawImage(shadow, Math.round(awc+(i-isloc[0])*asize),
+                                Math.round(ahc+(j-isloc[1])*asize));
                 }
             }
         }
         c.drawImage(avatar, awc, ahc);
+        if (coincount > 0){
+            txtprep(16);
+            c.textAlign = 'right';
+            c.fillText (coincount + ' coin' + (coincount>1?'s':''), aw-16, asize);
+        }
         break;
     case 'title':
         txtprep(48);
@@ -201,15 +223,26 @@ function keylistener(e){
             avatar = pleft;
             break;
         case 'ArrowUp': case 'KeyW': case 'KeyK': case 'KeyP': 
-            locnew = cplus(loc, [0, -1]); break;
+            locnew = cplus(loc, [0, -1]);
+            avatar = pup;
+            break;
         case 'ArrowDown': case 'KeyS': case 'KeyJ': case 'KeyN': 
-            locnew = cplus(loc, [0, 1]); break;
+            locnew = cplus(loc, [0, 1]);
+            avatar = pdown;
+            break;
         default:
             locnew = loc;
         }
         if (ofind(locnew) != 'wall'){
             loc = locnew;
             makevisited(loc);
+            switch(ofind(loc)){
+            case 'coin':
+                oset(loc, 'floor');
+                coincount ++;
+                break;
+            default: ;
+            }
         }
         if (loc[0]%12==1 && loc[1]%12==1){
             stage = 'gameover';
