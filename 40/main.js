@@ -25,6 +25,7 @@ function loadimages(){
     pleft = regimg('person_left1');
     pright = regimg('person_right1');
     coin = regimg('coin');
+    door = regimg('door');
     key = regimg('key');
     shadow = regimg('shadow');
 }
@@ -150,7 +151,7 @@ function redraw(){
             case 'floor': case 'start': case 'end':
                 sprite = floor; break;
             case 'door':
-                sprite = coin; break;
+                sprite = door; break;
             case null: case undefined: default:
                 sprite = null; break;
             }
