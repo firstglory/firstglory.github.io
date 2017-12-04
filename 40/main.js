@@ -6,10 +6,7 @@ function init(){
     canvas = document.getElementById('ce');
     c = canvas.getContext('2d');
     c.imageSmoothingEnabled = false;
-    wall = regimg('wall');
-    floor = regimg('floor');
-    pleft = regimg('person_left1');
-    pright = regimg('person_right1');
+    loadimages();
     avatar = pright;
     setInterval(slocly, 25);
     setInterval(redraw, 25);
@@ -17,6 +14,15 @@ function init(){
     document.onkeydown = keylistener;
     createmap();
     window.onresize = redraw;
+}
+
+function loadimages(){
+    wall = regimg('wall');
+    floor = regimg('floor');
+    pleft = regimg('person_left1');
+    pright = regimg('person_right1');
+    coin = regimg('coin');
+    key = regimg('key');
 }
 
 function createmap(){
@@ -37,7 +43,7 @@ function createmap(){
         }
     }
     loc = [1,5];
-    sloc = loc;
+    sloc = loc; // camera location
 }
 
 function slocly(){
@@ -70,16 +76,31 @@ function dimensions(){
 }
 
 function redraw(){
+    // clarify dimensions and redraw boundaries
     dimensions();
     isloc = sloc;
+    var i0, i1, j0, j1;
+    i0 = Math.floor(isloc[0]-awc/asize-1);
+    i1 = Math.ceil(isloc[0]+(aw-awc)/asize);
+    j0 = Math.floor(isloc[1]-ahc/asize-1);
+    j1 = Math.ceil(isloc[1]+(ah-ahc)/asize);
+    
+    // redraw
     c.clearRect(0, 0, aw, ah);
-    var i, j, disp;
-    for (i=0; i<arows; i++){
-        for (j=0; j<acols; j++){
-            if (map[[i,j]]){
-                c.drawImage(wall, Math.round(awc+(i-isloc[0])*asize), Math.round(ahc+(j-isloc[1])*asize));
-            }else{
-                c.drawImage(floor, Math.round(awc+(i-isloc[0])*asize), Math.round(ahc+(j-isloc[1])*asize));
+    var i, j, sprite;
+    for (i=i0; i<=i1; i++){
+        for (j=j0; j<=j1; j++){
+            switch (map[[i,j]]){
+            case true:
+                sprite = wall; break;
+            case false:
+                sprite = floor; break;
+            case null: case undefined: default:
+                sprite = null; break;
+            }
+            if(sprite){
+                c.drawImage(sprite, Math.round(awc+(i-isloc[0])*asize),
+                                    Math.round(ahc+(j-isloc[1])*asize));
             }
         }
     }
