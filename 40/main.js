@@ -31,6 +31,7 @@ function resetgame(){
     makemap();
     gifage = 0;
     coincount = 0;
+    keycount = 0;
     oset (cplus(startingpoint, [5, 5]), 'end'); // test
     erupted = false;
     lavarain = {};
@@ -209,6 +210,9 @@ function redraw(){
             c.textAlign = 'right';
             c.fillText (coincount + ' coin' + (coincount>1?'s':''), aw-16, asize);
         }
+        txtprep(16)
+        c.textAlign = 'left';
+        c.fillText (keycount + ' key', aw-56, 2*asize);
         break;
     case 'title':
         txtprep(48);
@@ -277,7 +281,14 @@ function keylistener(e){
         default:
             locnew = loc;
         }
-        if (ofind(locnew) != 'wall'){
+        if (ofind(locnew) == 'door'){
+            if (keycount > 0) {
+                loc = locnew;    
+                makevisited(loc);
+                oset(loc, 'floor');
+                keycount --;
+            }
+        }else if (ofind(locnew) != 'wall' && ofind(locnew) != 'door'){
             loc = locnew;
             makevisited(loc);
             switch(ofind(loc)){
@@ -288,6 +299,22 @@ function keylistener(e){
             case 'end':
                 stage = 'exit';
                 transage = 0;
+                break;
+            case 'wisp':
+                var n_coin = 0
+                for (var i = 0; i < rate.length; i++) {
+                    console.log(boundary(loc[0]));
+                    if (rate[i][0][0] == boundary(loc[0])[0] && rate[i][0][1] == boundary(loc[1])[0]) {
+                        console.log("geta");
+                        n_coin = rate[i][1];
+                        break;
+                    }
+                }
+                if (coincount >= n_coin) {
+                    oset(loc, 'floor');
+                    coincount -= n_coin;
+                    keycount ++;
+                }
                 break;
             default: ;
             }
