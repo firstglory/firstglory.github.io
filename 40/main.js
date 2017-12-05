@@ -32,6 +32,8 @@ function resetgame(){
     gifage = 0;
     coincount = 0;
     keycount = 0;
+    coinload = 1;
+    currentload = 0;
     oset (cplus(startingpoint, [5, 5]), 'end'); // test
     erupted = false;
     lavarain = {};
@@ -258,25 +260,43 @@ function regimg(name){
 }
 
 function keylistener(e){
+    if (coincount < 50)
+        coinload = 1;
+    else if (coincount >= 50 && coincount < 100)
+        coinload = 2
+    else
+        coinload = 3
     switch(stage){
     case 'play':
         var locnew;
         switch(e.code){
         case 'ArrowRight': case 'KeyD': case 'KeyL': case 'KeyF': 
-            locnew = cplus(loc, [1, 0]);
-            avatar = pright;
+            currentload ++;
+            if ((currentload % coinload) == 0) {
+                locnew = cplus(loc, [1, 0]);
+                avatar = pright;
+            }
             break;
         case 'ArrowLeft': case 'KeyA': case 'KeyH': case 'KeyB': 
-            locnew = cplus(loc, [-1, 0]);
-            avatar = pleft;
+            currentload ++;
+            if ((currentload % coinload) == 0) {
+                locnew = cplus(loc, [-1, 0]);
+                avatar = pleft;
+            }
             break;
         case 'ArrowUp': case 'KeyW': case 'KeyK': case 'KeyP': 
-            locnew = cplus(loc, [0, -1]);
-            avatar = pup;
+            currentload ++;
+            if ((currentload % coinload) == 0) {
+                locnew = cplus(loc, [0, -1]);
+                avatar = pup;
+            }
             break;
         case 'ArrowDown': case 'KeyS': case 'KeyJ': case 'KeyN': 
-            locnew = cplus(loc, [0, 1]);
-            avatar = pdown;
+            currentload ++;
+            if ((currentload % coinload) == 0) {
+                locnew = cplus(loc, [0, 1]);
+                avatar = pdown;
+            }
             break;
         default:
             locnew = loc;
@@ -303,9 +323,7 @@ function keylistener(e){
             case 'wisp':
                 var n_coin = 0
                 for (var i = 0; i < rate.length; i++) {
-                    console.log(boundary(loc[0]));
                     if (rate[i][0][0] == boundary(loc[0])[0] && rate[i][0][1] == boundary(loc[1])[0]) {
-                        console.log("geta");
                         n_coin = rate[i][1];
                         break;
                     }
