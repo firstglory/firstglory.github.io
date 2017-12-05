@@ -34,6 +34,9 @@ function resetgame(){
     keycount = 0;
     coinload = 1;
     currentload = 0;
+    n_coin = 0;
+    has_key = false;
+    has_enoughc = true;
     oset (cplus(startingpoint, [5, 5]), 'end'); // test
     erupted = false;
     lavarain = {};
@@ -212,9 +215,16 @@ function redraw(){
             c.textAlign = 'right';
             c.fillText (coincount + ' coin' + (coincount>1?'s':''), aw-16, asize);
         }
-        txtprep(16)
-        c.textAlign = 'left';
-        c.fillText (keycount + ' key', aw-56, 2*asize);
+        if (has_key) {
+            txtprep(16)
+            c.textAlign = 'left';
+            c.fillText (keycount + ' key', 16, asize);
+        }
+        if (!has_enoughc) {
+            txtprep(16);
+            c.textAlign = 'right';
+            c.fillText (coincount + " / " + n_coin, aw-16, 2*asize);
+        }
         break;
     case 'title':
         txtprep(48);
@@ -260,12 +270,14 @@ function regimg(name){
 }
 
 function keylistener(e){
-    if (coincount < 50)
+    if (coincount < 30)
         coinload = 1;
-    else if (coincount >= 50 && coincount < 100)
+    else if (coincount >= 30 && coincount < 70)
         coinload = 2
-    else
+    else if (coincount >= 70 && coincount < 110)
         coinload = 3
+    else
+        coinload = 4
     switch(stage){
     case 'play':
         var locnew;
@@ -307,6 +319,8 @@ function keylistener(e){
                 makevisited(loc);
                 oset(loc, 'floor');
                 keycount --;
+                has_enoughc = true;
+                has_key = false;
             }
         }else if (ofind(locnew) != 'wall' && ofind(locnew) != 'door'){
             loc = locnew;
@@ -321,7 +335,6 @@ function keylistener(e){
                 transage = 0;
                 break;
             case 'wisp':
-                var n_coin = 0
                 for (var i = 0; i < rate.length; i++) {
                     if (rate[i][0][0] == boundary(loc[0])[0] && rate[i][0][1] == boundary(loc[1])[0]) {
                         n_coin = rate[i][1];
@@ -332,7 +345,12 @@ function keylistener(e){
                     oset(loc, 'floor');
                     coincount -= n_coin;
                     keycount ++;
+                    has_key = true;
+                    has_enoughc = true;
                 }
+                else
+                    has_key = false;
+                    has_enoughc = false;
                 break;
             default: ;
             }
@@ -393,7 +411,7 @@ function eruptionpanbackfin(){
 }
 
 function lavagrows(){
-    if (erupted && gifage%40==0){
+    if (erupted && gifage%25==0){
         var n = lavarain.length;
         var i, j, lavloc, nlavloc, newlavarain = [];
         for (i=0; i<n; i++){
