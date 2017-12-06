@@ -37,7 +37,6 @@ function resetgame(){
     n_coin = 0;
     has_key = false;
     has_enoughc = true;
-    oset (cplus(startingpoint, [5, 5]), 'end'); // test
     erupted = false;
     lavarain = {};
     slocatlava = false;
@@ -354,9 +353,6 @@ function keylistener(e){
                 break;
             default: ;
             }
-        }
-        if (loc[0] == cplus(startingpoint, [1, -5])[0] && loc[1] == cplus(startingpoint, [1, -5])[1]){
-            stage = 'gameover'; // test
         }
         if (!erupted){
             var b0 = boundary(loc[0]);
